@@ -1,0 +1,12 @@
+[
+  {
+    "relation": [ "delegate_permission/common.handle_all_urls" ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.trimble.gccm.projectsight3",
+      "sha256_cert_fingerprints": [
+        "AA:48:0B:5D:5C:58:BB:54:21:90:5E:F5:AF:44:AB:E9:54:DB:0D:2F:BD:7A:2C:BF:28:CD:60:EE:A5:D7:F8:F5"
+      ]
+    }
+  }
+]

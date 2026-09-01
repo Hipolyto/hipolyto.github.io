@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "8XB7A2L3J2.com.trimble.ppm.ps.iphone.dev",
+        "paths": [ "/r/*" ]
+      }
+    ]
+  }
+}
