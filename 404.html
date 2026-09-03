@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Abriendo record…</title>
+  <style>
+    body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; margin: 0;
+           display: flex; min-height: 100vh; align-items: center; justify-content: center;
+           background: #f4f6f8; color: #333; text-align: center; }
+    .card { padding: 32px 28px; }
+    .spin { width: 32px; height: 32px; margin: 0 auto 16px; border: 3px solid #d0d7de;
+            border-top-color: #0969da; border-radius: 50%; animation: r 0.8s linear infinite; }
+    @keyframes r { to { transform: rotate(360deg); } }
+    a { color: #0969da; }
+    small { color: #888; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="spin"></div>
+    <p id="msg">Abriendo el record…</p>
+    <p><small id="sub"></small></p>
+  </div>
+
+  <script>
+  // ===========================================================================
+  // "Route" de Randy — CASO B (sin app): el host recibe el deep link y REDIRIGE
+  // al record real en el web. En device CON la app, el OS abre la app antes de
+  // que esto cargue, así que este script solo corre en escritorio / sin app.
+  //
+  // GitHub Pages es estático (no hay 302 de servidor), así que hacemos el mismo
+  // redirect del lado navegador. GitHub sirve este 404.html para cualquier ruta
+  // que no exista (los archivos de /.well-known/ SÍ existen y no pasan por aquí).
+  //
+  // Formato del deep link:  /r/{region}/{project}/{tipo}/{pkid}
+  // ===========================================================================
+
+  // Entorno de la prueba: staging, org del proyecto 2.
+  var WEB_BASE = 'https://staging.projectsightapp.trimble.com/web/app/';
+  var ORG_ID   = 'fd5f1e75-2291-4e1c-9811-d09eaa8a6fd6'; // org de staging (proyecto 2)
+
+  // tipo del deep link -> PDT (PrologTable.Types) que usa el web.
+  // Solo RFI está confirmado (PDT=8). Agregar aquí los demás con su PDT real.
+  var PDT = { RFI: 8 };
+
+  (function () {
+    var parts = location.pathname.split('/').filter(Boolean); // ["r","us","2","RFI","7"]
+    var sub = document.getElementById('sub');
+    var msg = document.getElementById('msg');
+
+    var ok = parts[0] === 'r' && parts.length === 5 && PDT[parts[3]] !== undefined;
+    if (!ok) {
+      document.querySelector('.spin').style.display = 'none';
+      msg.textContent = 'Enlace no reconocido';
+      sub.textContent = location.pathname;
+      return;
+    }
+
+    var project = parts[2];
+    var type    = parts[3];
+    var pkid    = parts[4];
+
+    var url = WEB_BASE + encodeURIComponent(type) +
+              '?orgid='  + encodeURIComponent(ORG_ID) +
+              '&projid=' + encodeURIComponent(project) +
+              '&Action=Open' +
+              '&PDT='    + PDT[type] +
+              '&PKID='   + encodeURIComponent(pkid);
+
+    sub.innerHTML = 'Si no redirige, <a href="' + url + '">abre el record aquí</a>.';
+    // replace() para no dejar el /r/... en el historial del navegador.
+    location.replace(url);
+  })();
+  </script>
+</body>
+</html>
