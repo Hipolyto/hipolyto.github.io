@@ -37,12 +37,13 @@
   // ===========================================================================
 
   // Entorno de la prueba: staging, org del proyecto 2.
-  var WEB_BASE = 'https://staging.projectsightapp.trimble.com/web/app/';
+  // RecordOpener.aspx es el endpoint GENÉRICO del web: abre cualquier record por PDT+PKID.
+  var WEB_BASE = 'https://staging.projectsightapp.trimble.com/web/RecordOpener.aspx';
   var ORG_ID   = 'fd5f1e75-2291-4e1c-9811-d09eaa8a6fd6'; // org de staging (proyecto 2)
 
-  // tipo del deep link -> PDT (PrologTable.Types) que usa el web.
-  // Solo RFI está confirmado (PDT=8). Agregar aquí los demás con su PDT real.
-  var PDT = { RFI: 8 };
+  // tipo del deep link -> PDT (PrologTable.Types) que usa el web. El PDT es exactamente el valor
+  // del enum del móvil (RFI=8, Drawing=56). Agregar aquí los demás con su PDT.
+  var PDT = { RFI: 8, Drawing: 56 };
 
   (function () {
     var parts = location.pathname.split('/').filter(Boolean); // ["r","us","2","RFI","7"]
@@ -61,10 +62,10 @@
     var type    = parts[3];
     var pkid    = parts[4];
 
-    var url = WEB_BASE + encodeURIComponent(type) +
+    var url = WEB_BASE +
               '?orgid='  + encodeURIComponent(ORG_ID) +
               '&projid=' + encodeURIComponent(project) +
-              '&Action=Open' +
+              '&Action=' +
               '&PDT='    + PDT[type] +
               '&PKID='   + encodeURIComponent(pkid);
 
