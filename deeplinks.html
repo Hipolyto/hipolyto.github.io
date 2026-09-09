@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PS-72132 · Deep link test</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; margin: 0; padding: 16px;
+           background: #f4f6f8; color: #1c2024; }
+    h1 { font-size: 18px; margin: 4px 0 2px; }
+    p.sub { margin: 0 0 14px; color: #6b7280; font-size: 13px; }
+    .note { background: #fff8e1; border: 1px solid #ffe08a; border-radius: 8px; padding: 10px 12px;
+            font-size: 13px; color: #6b5900; margin-bottom: 16px; }
+    a.link { display: block; background: #fff; border: 1px solid #d0d7de; border-radius: 10px;
+             padding: 14px 16px; margin: 8px 0; text-decoration: none; color: #0969da; }
+    a.link b { display: block; color: #1c2024; font-size: 15px; }
+    a.link span { font-size: 12px; color: #6b7280; word-break: break-all; }
+    @media (prefers-color-scheme: dark) {
+      body { background: #0d1117; color: #e6edf3; }
+      a.link { background: #161b22; border-color: #30363d; } a.link b { color: #e6edf3; }
+      .note { background: #2b2200; border-color: #6b5900; color: #f2d98a; }
+    }
+  </style>
+</head>
+<body>
+  <h1>ProjectSight · prueba de deep links (PS-72132)</h1>
+  <p class="sub">Staging · proyecto 2 · host de prueba hipolyto.github.io</p>
+  <div class="note">
+    💡 Para abrir en la <b>app</b>: <b>mantén presionado</b> el link → <b>“Abrir en ProjectSight”</b>
+    (un tap normal en el mismo dominio se queda en Safari). La app debe estar instalada, logueada en
+    <b>staging</b> y con el <b>proyecto 2</b> abierto.
+  </div>
+  <div id="list"></div>
+  <script>
+    var ORG = 'fd5f1e75-2291-4e1c-9811-d09eaa8a6fd6';
+    var BASE = 'https://hipolyto.github.io/web/RecordOpener.aspx?orgid=' + ORG + '&projid=2&Action=';
+    var records = [
+      ['RFI', 8, 7], ['Action Items (Hot List)', 50, 34], ['Checklist', 189, 49],
+      ['Drawing', 56, 498], ['Punch List', 49, 14], ['Submittal Register', 45, 14],
+      ['Submittal Package', 52, 1], ['Daily Report', 38, 8], ['Field Work Order', 64, 3],
+      ['Issue', 75, 68], ['Notice', 67, 6], ['Safety', 68, 10],
+      ['Specification (abre lista)', 97, 1]
+    ];
+    var html = records.map(function (r) {
+      var url = BASE + '&PDT=' + r[1] + '&PKID=' + r[2];
+      return '<a class="link" href="' + url + '"><b>' + r[0] + '</b>' +
+             '<span>PDT ' + r[1] + ' · PKID ' + r[2] + '</span></a>';
+    }).join('');
+    document.getElementById('list').innerHTML = html;
+  </script>
+</body>
+</html>
