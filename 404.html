@@ -13,7 +13,7 @@
             border-top-color: #0969da; border-radius: 50%; animation: r 0.8s linear infinite; }
     @keyframes r { to { transform: rotate(360deg); } }
     a { color: #0969da; }
-    small { color: #888; }
+    small { color: #888; word-break: break-all; }
   </style>
 </head>
 <body>
@@ -25,59 +25,49 @@
 
   <script>
   // ===========================================================================
-  // "Route" de Randy — CASO B (sin app): el host recibe el deep link y REDIRIGE
-  // al record real en el web. En device CON la app, el OS abre la app antes de
-  // que esto cargue, así que este script solo corre en escritorio / sin app.
+  // Fallback web (CASO B — sin app): el host recibe el deep link y REDIRIGE al
+  // record real en ProjectSight web, conservando el query tal cual.
   //
-  // GitHub Pages es estático (no hay 302 de servidor), así que hacemos el mismo
-  // redirect del lado navegador. GitHub sirve este 404.html para cualquier ruta
-  // que no exista (los archivos de /.well-known/ SÍ existen y no pasan por aquí).
+  // En un iPhone CON la app instalada, el OS abre la app por la Universal Link
+  // antes de que esta página cargue, así que este script solo corre cuando NO
+  // hubo intercepción: sin app, en escritorio, o navegando en el mismo dominio
+  // dentro de Safari. GitHub Pages es estático (no hay 302 de servidor), así que
+  // hacemos el redirect del lado navegador. GitHub sirve este 404.html para
+  // cualquier ruta que no exista — /web/RecordOpener.aspx no es un archivo real,
+  // por eso entra aquí; los archivos de /.well-known/ SÍ existen y no pasan por aquí.
   //
-  // Formato del deep link:  /r/{region}/{project}/{tipo}/{pkid}
+  // Formato real del link (el que emite el web):
+  //   /web/RecordOpener.aspx?orgid=..&projid=..&Action=..&PDT=<tipo>&PKID=<id>
+  // El PDT (PrologTable.Types) y el PKID identifican el record; RecordOpener.aspx
+  // es el endpoint genérico del web que abre cualquier record por PDT+PKID.
   // ===========================================================================
 
-  // Entorno de la prueba: staging, org del proyecto 2.
-  // RecordOpener.aspx es el endpoint GENÉRICO del web: abre cualquier record por PDT+PKID.
+  // Entorno donde viven estos records de prueba: staging.
   var WEB_BASE = 'https://staging.projectsightapp.trimble.com/web/RecordOpener.aspx';
-  var ORG_ID   = 'fd5f1e75-2291-4e1c-9811-d09eaa8a6fd6'; // org de staging (proyecto 2)
-
-  // tipo del deep link -> PDT (PrologTable.Types) que usa el web. El PDT es exactamente el valor
-  // del enum del móvil. El segmento de tipo puede venir como nombre (RFI) o como el PDT entero (8).
-  var PDT = {
-    RFI: 8, DailyReport: 38, SubmittalRegister: 45, PunchList: 49, HotList: 50, ActionItem: 50,
-    SubmittalPackage: 52, Drawing: 56, FieldWorkOrder: 64, Notice: 67, Safety: 68, Issue: 75,
-    Specification: 98, Checklist: 189
-  };
 
   (function () {
-    var parts = location.pathname.split('/').filter(Boolean); // ["r","us","2","RFI","7"]
-    var sub = document.getElementById('sub');
     var msg = document.getElementById('msg');
+    var sub = document.getElementById('sub');
+    var q = new URLSearchParams(location.search);
 
-    // El segmento de tipo puede ser el PDT entero (web) o un nombre (RFI, Drawing…).
-    var typeSeg = parts[3];
-    var pdt = /^[0-9]+$/.test(typeSeg) ? parseInt(typeSeg, 10) : PDT[typeSeg];
+    // Mínimo para abrir un record: PDT (tipo) y PKID (id). Si falta alguno, no
+    // redirigimos a ciegas.
+    var pdt  = q.get('PDT');
+    var pkid = q.get('PKID');
+    var ok = pdt && pkid && /^[0-9]+$/.test(pdt) && /^[0-9]+$/.test(pkid);
 
-    var ok = parts[0] === 'r' && parts.length === 5 && pdt !== undefined;
     if (!ok) {
       document.querySelector('.spin').style.display = 'none';
       msg.textContent = 'Enlace no reconocido';
-      sub.textContent = location.pathname;
+      sub.textContent = location.pathname + location.search;
       return;
     }
 
-    var project = parts[2];
-    var pkid    = parts[4];
-
-    var url = WEB_BASE +
-              '?orgid='  + encodeURIComponent(ORG_ID) +
-              '&projid=' + encodeURIComponent(project) +
-              '&Action=' +
-              '&PDT='    + pdt +
-              '&PKID='   + encodeURIComponent(pkid);
+    // Mismo query, dominio real: el record se abre en el web sin remapear nada.
+    var url = WEB_BASE + location.search;
 
     sub.innerHTML = 'Si no redirige, <a href="' + url + '">abre el record aquí</a>.';
-    // replace() para no dejar el /r/... en el historial del navegador.
+    // replace() para no dejar el host de prueba en el historial del navegador.
     location.replace(url);
   })();
   </script>
