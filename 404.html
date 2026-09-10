@@ -37,13 +37,13 @@
   // por eso entra aquí; los archivos de /.well-known/ SÍ existen y no pasan por aquí.
   //
   // Formato real del link (el que emite el web):
-  //   /web/RecordOpener.aspx?orgid=..&projid=..&Action=..&PDT=<tipo>&PKID=<id>
-  // El PDT (PrologTable.Types) y el PKID identifican el record; RecordOpener.aspx
-  // es el endpoint genérico del web que abre cualquier record por PDT+PKID.
+  //   /web/app/{Tipo}?orgid=..&projid=..&Action=..&PDT=<tipo>&PKID=<id>&OVRO=..
+  // El tipo va en la ruta ({Tipo}) y también como PDT en el query. Conservamos la
+  // ruta y el query tal cual y solo cambiamos el dominio al real.
   // ===========================================================================
 
   // Entorno donde viven estos records de prueba: staging.
-  var WEB_BASE = 'https://staging.projectsightapp.trimble.com/web/RecordOpener.aspx';
+  var WEB_ORIGIN = 'https://staging.projectsightapp.trimble.com';
 
   (function () {
     var msg = document.getElementById('msg');
@@ -63,8 +63,8 @@
       return;
     }
 
-    // Mismo query, dominio real: el record se abre en el web sin remapear nada.
-    var url = WEB_BASE + location.search;
+    // Misma ruta + mismo query, dominio real: el record se abre en el web sin remapear nada.
+    var url = WEB_ORIGIN + location.pathname + location.search;
 
     sub.innerHTML = 'Si no redirige, <a href="' + url + '">abre el record aquí</a>.';
     // replace() para no dejar el host de prueba en el historial del navegador.

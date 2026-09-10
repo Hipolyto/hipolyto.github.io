@@ -5,7 +5,7 @@
       {
         "appID": "8XB7A2L3J2.com.trimble.ppm.ps.iphone.dev",
         "paths": [
-          "/web/RecordOpener.aspx*"
+          "/web/app/*"
         ]
       }
     ]
