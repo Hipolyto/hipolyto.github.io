@@ -63,8 +63,10 @@
       return;
     }
 
-    // Misma ruta + mismo query, dominio real: el record se abre en el web sin remapear nada.
-    var url = WEB_ORIGIN + location.pathname + location.search;
+    // RecordOpener.aspx es el endpoint REAL type-agnostic del web (302 -> auth -> record); abre
+    // cualquier tipo por PDT+PKID sin nombre de tipo en la ruta. Conservamos el query y redirigimos ahí,
+    // sin importar por qué ruta entró el link a este host.
+    var url = WEB_ORIGIN + '/web/RecordOpener.aspx' + location.search;
 
     sub.innerHTML = 'Si no redirige, <a href="' + url + '">abre el record aquí</a>.';
     // replace() para no dejar el host de prueba en el historial del navegador.
