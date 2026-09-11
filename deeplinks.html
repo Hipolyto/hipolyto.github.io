@@ -30,8 +30,8 @@
     💡 Para abrir en la <b>app</b>: <b>mantén presionado</b> el link → <b>“Abrir en ProjectSight”</b>
     (un tap normal en el mismo dominio se queda en Safari). La app debe estar instalada, logueada en
     <b>staging</b> y con el <b>proyecto 2</b> abierto.
-    <br><br>ℹ️ Ruta real del record: <b>/web/app/{Tipo}?…&PDT&PKID</b> — confirmada contra links reales
-    del web (RFI y FieldWorkOrder). Los demás siguen la misma convención; la app abre por <b>PDT</b>.
+    <br><br>ℹ️ Ruta real del record: <b>/web/app/{Tipo}?…&PDT&PKID</b> — los 13 segmentos verificados
+    contra staging (HTTP 200). La app abre por <b>PDT</b>; sin app, la página redirige al record en el web.
   </div>
   <div id="list"></div>
   <script>
